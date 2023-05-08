@@ -1,2 +1,2 @@
-# yam-parse
-Parser for yam configuration language.
+# Yam Parser
+Yam configuration language parser for python
