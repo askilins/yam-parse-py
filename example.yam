@@ -11,7 +11,7 @@
     options: <load>pages/options.html</load>
     log_path: logs/display.log
     settings:
-      width: 1920
-      height: 1080
-      mode: fullscreen
+        width: 1920
+        height: 1080
+        mode: fullscreen
     show_hidden: false

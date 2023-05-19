@@ -43,9 +43,9 @@ class Scanner:
                     self.number()
 
             case ' ':
-                if self.peek_start() == ' ':
+                if self.source[Scanner.start:Scanner.start + 4] == '    ':
                     Scanner.start += 1
-                    self.add_token(TokenType.TAB)
+                    self.add_token(TokenType.INDENT)
 
             case '|':
                     self.add_token(TokenType.BAR)

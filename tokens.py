@@ -15,7 +15,7 @@ class TokenType:
     TAG = 9
     
     # Flow:
-    TAB = 10
+    INDENT = 10
     NEW_LINE = 11
     BAR = 12
     
