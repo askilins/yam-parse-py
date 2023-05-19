@@ -4,7 +4,7 @@
     "0.1.2"
 - background:
     svg: <load>background.svg</load>
-    transparency: 60%
+    tr:ansparency: 60%
     color: 255|255|255
 - !Display
     menu: <load>pages/index.html</load>
