@@ -44,7 +44,7 @@ class Scanner:
 
             case ' ':
                 if self.source[Scanner.start:Scanner.start + 4] == '    ':
-                    Scanner.start += 1
+                    Scanner.start += 3
                     self.add_token(TokenType.INDENT)
 
             case '|':
