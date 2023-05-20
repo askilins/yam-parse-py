@@ -236,11 +236,15 @@ class Scanner:
             tag = self.source[Scanner.start + 1: Scanner.current + 1]
             Scanner.current += 1
 
-            while self.peek_current() != '<' and not self.is_at_end():
+            while not self.is_at_end():
+                if self.is_at_end():
+                    error(Scanner.line, "Closing tag not found.")
+
+                if self.peek_current() == '<':
+                    if self.source[Scanner.current + 1:(Scanner.current + len(tag) + 4)] == f"</{tag}>":
+                        Scanner.current += (len(tag) + 3)
+                        content = self.source[(Scanner.start + len(tag) + 2):(Scanner.current - (len(tag) + 2))]
+                        self.add_token(TokenType.TAG, content, tag)
+                        return
+
                 Scanner.current += 1
-            
-            if self.source[Scanner.current + 1:(Scanner.current + len(tag) + 4)] == f"</{tag}>":
-                Scanner.current += (len(tag) + 3)
-                content = self.source[(Scanner.start + len(tag) + 2):(Scanner.current - (len(tag) + 2))]
-                self.add_token(TokenType.TAG, content, tag)
-                    
