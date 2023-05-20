@@ -43,8 +43,8 @@ class Scanner:
                     self.number()
 
             case ' ':
-                if self.source[Scanner.start:Scanner.start + 4] == '    ':
-                    Scanner.start += 3
+                if self.peek_start == ' ':
+                    Scanner.start += 1
                     self.add_token(TokenType.INDENT)
 
             case '|':
@@ -156,20 +156,26 @@ class Scanner:
         self.text()
 
     def text(self):
-        if Scanner.start == '"':
+        if self.source[Scanner.start] == '"':
             if self.source[Scanner.start: Scanner.start + 3] == '"""':
+                Scanner.start += 3
+                lines = []
                 while True:
                     if self.is_at_end():
                         error(Scanner.line, "Have to close the multiline text quotes.")
 
-                    if self.peek() == '\n':
+                    if self.peek_current() == '\n':
                         Scanner.line += 1
+                        lines.append(self.source[Scanner.start: Scanner.current + 1].strip())
+                        Scanner.current += 1
+                        self.equlize_indexes()
 
-                    if self.peek() == '"':
+                    if self.peek_current() == '"':
                         if self.source[Scanner.current + 1: Scanner.current + 4] == '"""':
-                            Scanner.current += 3
-                            text = self.source[Scanner.start:Scanner.current + 1]
-                            add_token(TokenType.TEXT, None, text)
+                            lines.append(self.source[Scanner.start: Scanner.current + 1])
+                            self.equlize_indexes()
+                            Scanner.start += 3
+                            self.add_token(TokenType.MULTILINE, None, lines[1:-1])
                             return
 
                     Scanner.current += 1
@@ -178,12 +184,13 @@ class Scanner:
                 if self.is_at_end():
                     error(Scanner.line, "Have to close the text quotes.")
 
-                if self.peek() == '\n':
+                if self.peek_current() == '\n':
                     error(Scanner.line, "Have to close the text quotes")
 
-                if self.peek == '"':
+                if self.peek_current() == '"':
                     text = self.source[Scanner.start: Scanner.current + 1]
-                    add_token(TokenType.TEXT, None, text)
+                    Scanner.current += 1
+                    self.add_token(TokenType.TEXT, None, text)
                     return
 
                 Scanner.current += 1
