@@ -37,8 +37,5 @@ class Token:
         self.literal = literal
         self.line = line
 
-    def to_string(self):
-        return f"{self.t_type} {self.lexeme} {self.literal}"
-
     def __repr__(self):
         return f"<Token type: {TokenType.type_name(self.t_type)}, lexeme: {self.lexeme}, literal: {self.literal}, line: {self.line}>"
