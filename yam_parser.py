@@ -1,4 +1,5 @@
 from scanner import Scanner
+from parser import Parser
 from icecream import ic
 
 
@@ -8,5 +9,9 @@ def parse(file_path, *class_references, **tag_references):
 
     scanner = Scanner(source)
     tokens = scanner.scan_tokens()
-
     ic(tokens)
+
+    parser = Parser(tokens)
+    data = parser.parse()
+
+    return data

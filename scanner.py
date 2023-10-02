@@ -28,7 +28,7 @@ class Scanner:
             Scanner.current = Scanner.start
 
     def scan_token(self):
-        c =  self.advance()
+        c = self.advance()
         match c:
             case '-':
                 if self.peek_start() == ' ':
@@ -48,7 +48,7 @@ class Scanner:
                     self.add_token(TokenType.INDENT)
 
             case '|':
-                    self.add_token(TokenType.BAR)
+                self.add_token(TokenType.BAR)
 
             case '!':
                 if self.peek_start() != ' ':
@@ -63,7 +63,7 @@ class Scanner:
 
             case '\t':
                 pass
-            
+
             case '\n':
                 Scanner.line += 1
 
@@ -78,7 +78,6 @@ class Scanner:
                     return
 
                 self.other()
-                
 
     def advance(self) -> str:
         Scanner.start += 1
@@ -117,7 +116,7 @@ class Scanner:
             return ''
         return self.source[(Scanner.current + 1)]
 
-    def peek_next_current(self)-> str:
+    def peek_next_current(self) -> str:
         if Scanner.current + 1 >= len(self.source):
             return ''
         return self.source[(Scanner.current + 2)]
@@ -130,15 +129,14 @@ class Scanner:
             Scanner.current += 1
             while self.is_digit(self.peek_current()):
                 Scanner.current += 1
-        
+
         number = self.source[Scanner.start:Scanner.current + 1]
         self.add_token(TokenType.NUMBER, number)
-
 
     def other(self):
         while self.is_alphanumeric(self.peek_current()) and not self.is_at_end():
             Scanner.current += 1
-        
+
         text = self.source[Scanner.start:Scanner.current + 1].strip()
         if self.peek_current() == ':':
             Scanner.current += 1
@@ -197,7 +195,7 @@ class Scanner:
 
         while self.peek_current() != '\n' and not self.is_at_end():
             Scanner.current += 1
-        
+
         text = self.source[Scanner.start:Scanner.current + 1]
         self.add_token(TokenType.TEXT, None, text)
 
@@ -220,7 +218,7 @@ class Scanner:
 
             while self.is_alphanumeric(self.peek_current()):
                 Scanner.current += 1
-            
+
             if self.peek_current() == "|" and self.peek_next_current() == ">":
                 Scanner.current += 2
                 tag = self.source[Scanner.start + 2: Scanner.current - 1]

@@ -13,14 +13,14 @@ class TokenType:
     # Extended types:
     OBJECT = 8
     TAG = 9
-    
+
     # Flow:
     INDENT = 10
     NEW_LINE = 11
     BAR = 12
-    
+
     EOF = 0
-    
+
     @classmethod
     def type_name(cls, t_type: int) -> str:
         for key, value in vars(cls).items():
