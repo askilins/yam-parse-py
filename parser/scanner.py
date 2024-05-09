@@ -1,5 +1,5 @@
-from tokens import Token, TokenType
-from errors import error
+from .tokens import Token, TokenType
+from .errors import ParseError
 
 
 class Scanner:
@@ -18,7 +18,7 @@ class Scanner:
                 break
             self.scan_token()
 
-        Scanner.tokens.append(Token(TokenType.EOF, None, None, Scanner.line))
+        self.add_token(TokenType.EOF)
         return Scanner.tokens
 
     def equlize_indexes(self):
@@ -32,20 +32,18 @@ class Scanner:
         match c:
             case '-':
                 if self.peek_start() == ' ':
-                    Scanner.start += 1
                     self.add_token(TokenType.LIST_ENTRY)
+                    Scanner.start += 1
 
                 elif self.peek_start() == '-' and self.peek_next_current == '-':
-                    Scanner.start += 2
                     self.add_token(TokenType.LIST_INNER)
+                    Scanner.start += 2
 
                 elif self.is_digit(self.peek()):
                     self.number()
 
             case ' ':
-                if self.peek_start == ' ':
-                    Scanner.start += 1
-                    self.add_token(TokenType.INDENT)
+                Scanner.start += 1
 
             case '|':
                 self.add_token(TokenType.BAR)
@@ -55,8 +53,7 @@ class Scanner:
                     self.obj()
 
             case '<':
-                if not self.peek_start() == ' ':
-                    self.tag()
+                self.tag()
 
             case '\r':
                 pass
@@ -65,7 +62,7 @@ class Scanner:
                 pass
 
             case '\n':
-                Scanner.line += 1
+                self.add_token(TokenType.NEW_LINE)
 
             case '~':
                 if self.peek_start() == '~':
@@ -85,7 +82,7 @@ class Scanner:
         return self.source[Scanner.start]
 
     def add_token(self, t_type: TokenType, lexeme: str=None, literal: object=None):
-        Scanner.tokens.append(Token(t_type, lexeme, literal, Scanner.line))
+        Scanner.tokens.append(Token(t_type, lexeme, literal, Scanner.line, Scanner.start))
 
     def is_at_end(self, index: int=None):
         if index:
@@ -160,7 +157,7 @@ class Scanner:
                 lines = []
                 while True:
                     if self.is_at_end():
-                        error(Scanner.line, "Have to close the multiline text quotes.")
+                        raise ParseError(Scanner.line, "Have to close the multiline text quotes.")
 
                     if self.peek_current() == '\n':
                         Scanner.line += 1
@@ -180,10 +177,10 @@ class Scanner:
 
             while True:
                 if self.is_at_end():
-                    error(Scanner.line, "Have to close the text quotes.")
+                    raise ParseError(Scanner.line, "Have to close the text quotes.")
 
                 if self.peek_current() == '\n':
-                    error(Scanner.line, "Have to close the text quotes")
+                    raise ParseError(Scanner.line, "Have to close the text quotes")
 
                 if self.peek_current() == '"':
                     text = self.source[Scanner.start: Scanner.current + 1]
@@ -201,7 +198,7 @@ class Scanner:
 
     def obj(self):
         if self.is_digit(self.source[Scanner.start + 1]):
-            error(Scanner.line, "Object name can't start with a digit")
+            raise ParseError(Scanner.line, "Object name can't start with a digit")
             return
 
         while self.is_alphanumeric(self.peek_current()):
@@ -211,10 +208,10 @@ class Scanner:
         self.add_token(TokenType.OBJECT, token)
 
     def tag(self):
-        if self.peek_current() == '|':
+        if self.peek_current() == '/':
             Scanner.current += 1
             if not self.is_alpha(self.peek_next_current()):
-                error(Scanner.line, "Tag has to start with a alpha character or slash.")
+                raise ParseError(Scanner.line, "Tag has to start with a alpha character or slash.")
 
             while self.is_alphanumeric(self.peek_current()):
                 Scanner.current += 1
@@ -225,7 +222,7 @@ class Scanner:
                 self.add_token(TokenType.TAG, None, tag)
                 return
             else:
-                error(Scanner.line, "Partial Tag. Invalid syntax.")
+                raise ParseError(Scanner.line, "Partial Tag. Invalid syntax.")
 
         while self.is_alphanumeric(self.peek_current()) and not self.is_at_end():
             Scanner.current += 1
@@ -236,7 +233,7 @@ class Scanner:
 
             while not self.is_at_end():
                 if self.is_at_end():
-                    error(Scanner.line, "Closing tag not found.")
+                    raise ParseError(Scanner.line, "Closing tag not found.")
 
                 if self.peek_current() == '<':
                     if self.source[Scanner.current + 1:(Scanner.current + len(tag) + 4)] == f"</{tag}>":

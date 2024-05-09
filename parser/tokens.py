@@ -15,9 +15,8 @@ class TokenType:
     TAG = 9
 
     # Flow:
-    INDENT = 10
-    NEW_LINE = 11
-    BAR = 12
+    NEW_LINE = 10
+    BAR = 11
 
     EOF = 0
 
@@ -31,11 +30,12 @@ class TokenType:
 
 
 class Token:
-    def __init__(self, t_type: TokenType, lexeme: str, literal: object, line: int):
+    def __init__(self, t_type: TokenType, lexeme: str, literal: object, line: int, position: int):
         self.t_type = t_type
         self.lexeme = lexeme
         self.literal = literal
         self.line = line
+        self.pos = position
 
     def __repr__(self):
-        return f"<Token type: {TokenType.type_name(self.t_type)}, lexeme: {self.lexeme}, literal: {self.literal}, line: {self.line}>"
+        return f"<Token type: {TokenType.type_name(self.t_type)}, lexeme: {self.lexeme}, literal: {self.literal}, line: {self.line}, pos: {self.pos}>"
