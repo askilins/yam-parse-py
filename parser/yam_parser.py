@@ -1,5 +1,5 @@
-from .scanner import Scanner
-from .parser import Parser
+from scanner import Scanner
+from parser import Parser
 from icecream import ic
 
 

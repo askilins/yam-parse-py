@@ -1,5 +1,5 @@
-from .tokens import Token, TokenType
-from .errors import ParseError
+from tokens import Token, TokenType
+from errors import ParseError
 
 
 class Scanner:
